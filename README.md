@@ -1,1 +1,1 @@
-# sgcc-portfolio-project
+# sgcc-web-study
