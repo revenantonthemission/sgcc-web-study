@@ -2,15 +2,13 @@
 
 ## 프로젝트 개요
 
-프로젝트의 결과물은 [여기](http://localhost)에서 확인할 수 있습니다.
+프로젝트의 결과물은 [여기](https://sgcc-web-study.vercel.app)에서 확인할 수 있습니다.
 
 ### 프로젝트의 목표
 
 이번 프로젝트의 목표는 다음과 같은 서비스를 제공하는 웹사이트를 만드는 것입니다:
 
 + 메모 앱 (ex. [Google Keep](https://keep.google.com/#home), [네이버 메모](https://memo.naver.com/main) 등)
-+ 
-+ ...
 
 ## 주요 서비스 (기능 명세서)
 
@@ -26,10 +24,6 @@
   + 데이터베이스 서비스 (ex. [Firebase](https://firebase.google.com/?hl=ko))
   + 벡엔드 : SvelteKit
 + 카테고리별 메모 분류
-
-### 서비스 2
-
-... 
 
 ## 배포 전략 및 환경
 
