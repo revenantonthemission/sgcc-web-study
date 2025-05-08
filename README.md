@@ -1,38 +1,58 @@
-# sv
+# sgcc-web-study
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+## 프로젝트 개요
 
-## Creating a project
+프로젝트의 결과물은 [여기](http://localhost)에서 확인할 수 있습니다.
 
-If you're seeing this, you've probably already done this step. Congrats!
+### 프로젝트의 목표
+
+이번 프로젝트의 목표는 다음과 같은 서비스를 제공하는 웹사이트를 만드는 것입니다:
+
++ \[ 서비스 1 \]
++ \[ 서비스 2 \]
++ ...
+
+## 주요 서비스 (기능 명세서)
+
+### 서비스 1
+
+...
+
+### 서비스 2
+
+... 
+
+## 배포 전략 및 환경
+
+현재 이 프로젝트의 배포 환경은 [Vercel](https://vercel.com/home)로 설정되어 있습니다.
+
+## 주요 개발 단계 및 마감일
+
+주요 개발 단계는 기획, 기능 개발, 테스트, 배포로 나누어져 있습니다.
+
+### 기획
+
+### 기능 개발
+
+### 테스트
+
+### 배포
+
+## 버전 관리
+
+우선 이 레포지토리를 포크(fork)해 각자의 깃허브 프로필에 프로젝트 작업을 위한 기본적인 템플릿을 마련해 주시기를 바랍니다.
+
+### Branch
+
+새 기능을 구현하고자 할 때는 코드의 충돌이나 꼬임에 대비하여 기존의 `main` 브랜치가 아닌 새로운 브랜치에 작업해 주시기를 바랍니다. 새로운 브랜치는
 
 ```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
+$ git branch branch_name
+$ git checkout branch_name
 ```
 
-## Developing
+혹은 `git checkout -b branch_name`을 통해 만들 수 있습니다. 여기서 `branch_name`은 임의의 브랜치 이름으로, 브랜치 이름은 자유롭게 정하면 됩니다.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+### Pull Request
 
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+앞서 `fork`를 통해 프로젝트의 복사본을 가져왔기 때문에 이 복사본에서는 자유롭게 코드를 업로드할 수 있습니다. 여러분의 작업물을 실제 프로젝트에 반영하기 위해서는 풀 리퀘스트를 해야 합니다. 풀 리퀘스트의 수용 여부는 프로젝트의 관리자가 결정합니다.
