@@ -1,57 +1,67 @@
 digraph ProjectArchitecture {
     comment="SGCC Web Study SvelteKit Project Architecture"
-    // rankdir=LR  // 이 부분을 주석 처리하거나 삭제하여 수직 방향 레이아웃을 유도
+    // rankdir=LR // 가로 방향 레이아웃을 위해 주석 해제 또는 TB로 변경 가능
     labelloc=t
-    label="SGCC Web Study - SvelteKit Project Architecture Overview (Compacted)"
+    label="SGCC Web Study - SvelteKit Project Architecture Overview (Adjusted)"
     fontsize=20
-    nodesep="0.8" // 노드 간 간격 조정
-    ranksep="1.2" // 랭크 간 간격 조정
+    nodesep="0.6" // 노드 간 간격 조금 줄임
+    ranksep="1.0" // 랭크 간 간격 조금 줄임
+    splines=ortho // 엣지를 직선적으로 (또는 'polyline', 'curved')
 
-    subgraph cluster_build_tools {
-        label="Build & Development Tools"
-        style=filled
-        color=lightgrey
-        node [style=filled color=white]
-        Vite
-        SvelteKit [label="SvelteKit Framework"]
-        NodeJS [label="Node.js (Runtime Environment)"]
+    // 최상단 그룹: 빌드 도구 및 사용자
+    subgraph cluster_top_level {
+        rank=source; // 최상단에 배치
+        style=invis; // 이 클러스터 자체는 보이지 않게
+        
+        subgraph cluster_build_tools {
+            label="Build & Development Tools"
+            style=filled
+            color=lightgrey
+            node [style=filled color=white]
+            Vite; SvelteKit_Framework [label="SvelteKit Framework"]; NodeJS [label="Node.js (Runtime)"];
+        }
+        User [shape=actor];
     }
 
+
+    // 클라이언트 사이드
     subgraph cluster_client {
         label="Client-Side (Browser - SvelteKit Frontend)"
         style=filled
         color=lightblue
         node [style=filled color=white]
         
-        User [shape=actor]
-        AppHTML [label="src/app.html\n(HTML Template)"]
+        AppHTML [label="src/app.html\n(HTML Template)"];
         
+        // 페이지와 레이아웃
         subgraph cluster_pages {
-            label="Pages (src/routes)"
+            label="Pages & Layout (src/routes)"
             style=filled
             color=lightyellow
-            Layout [label="+layout.svelte (Common Layout)"]
-            HomePage [label="+page.svelte (Home)"]
-            StatsPage [label="stats/+page.svelte (Stats)"]
-            AboutPage [label="about/+page.svelte (About)"]
+            Layout [label="+layout.svelte\n(Common Layout)"];
+            HomePage [label="+page.svelte (Home)"];
+            StatsPage [label="stats/+page.svelte (Stats)"];
+            AboutPage [label="about/+page.svelte (About)"];
         }
         
-        AppCSS [label="src/app.css\n(Global Styles)"]
+        AppCSS [label="src/app.css\n(Global Styles)"];
 
+        // UI 컴포넌트 (페이지와 같은 레벨에 두어 연결 용이)
         subgraph cluster_components {
             label="UI Components (src/lib/components)"
             style=filled
             color=lightcyan
-            Header [label="Header.svelte"]
-            TodoForm [label="TodoForm.svelte"]
-            TodoItem [label="TodoItem.svelte"]
-            FilterBar [label="FilterBar.svelte"]
+            Header [label="Header.svelte"];
+            TodoForm [label="TodoForm.svelte"];
+            TodoItem [label="TodoItem.svelte"];
+            FilterBar [label="FilterBar.svelte"];
         }
 
-        Stores [label="src/lib/stores.js\n(Svelte Stores:\ntodos, filter, theme, stats)"]
-        ClientAPI [label="src/lib/api.js\n(Client-Side API Calls)"]
+        Stores [label="src/lib/stores.js\n(Svelte Stores)"];
+        ClientAPI [label="src/lib/api.js\n(Client-Side API Calls)"];
     }
 
+    // 서버 사이드
     subgraph cluster_server {
         label="Server-Side (SvelteKit Backend)"
         style=filled
@@ -62,60 +72,64 @@ digraph ProjectArchitecture {
             label="API Routes (src/routes/api/todos)"
             style=filled
             color=palegreen
-            TodosAPI [label="+server.js\n(GET /api/todos, POST /api/todos)"]
-            TodoDetailAPI [label="[id]/+server.js\n(PATCH /api/todos/{id}, DELETE /api/todos/{id})"]
+            TodosAPI [label="+server.js\n(GET /api/todos, POST /api/todos)"];
+            TodoDetailAPI [label="[id]/+server.js\n(PATCH /api/todos/{id}, DELETE /api/todos/{id})"];
         }
-        InMemoryData [label="In-Memory Data Store\n(JS Array in +server.js files)"]
+        InMemoryData [label="In-Memory Data Store"];
     }
 
-    // 관계 정의 (배치를 고려하여 순서 및 그룹화 조정)
-    // User Interaction
-    User -> AppHTML [label="Interacts via Browser"]
+    // 관계 정의 (레이아웃 흐름에 맞춰 조정)
+    
+    // 빌드 도구
+    SvelteKit_Framework -> Vite [label="Uses"];
+    Vite -> NodeJS;
+    SvelteKit_Framework -> NodeJS [label="Runs on"];
 
-    // Build Tools and Runtime
-    SvelteKit -> Vite [label=Uses]
-    Vite -> NodeJS [label="Runs on"]
-    SvelteKit -> NodeJS [label="Runs on"]
+    // 사용자 -> HTML 템플릿
+    User -> AppHTML [label="Interacts via Browser"];
     
-    // Client App Structure
-    AppHTML -> Layout
-    AppHTML -> AppCSS [label=Links]
-    Layout -> HomePage
-    Layout -> StatsPage
-    Layout -> AboutPage
+    // HTML 템플릿 -> 레이아웃 및 CSS
+    AppHTML -> Layout;
+    AppHTML -> AppCSS [label="Links"];
+    
+    // 레이아웃 -> 페이지
+    Layout -> HomePage;
+    Layout -> StatsPage;
+    Layout -> AboutPage;
 
-    // Page Content and Components
-    HomePage -> Header
-    HomePage -> TodoForm
-    HomePage -> TodoItem
-    HomePage -> FilterBar
+    // 페이지 -> UI 컴포넌트 및 스토어
+    // 컴포넌트들이 페이지 내부에 포함되는 관계를 명시적으로 표현
+    HomePage -> Header [lhead=cluster_components, label="Uses"]; // lhead를 사용하여 클러스터로 향하게 함
+    HomePage -> TodoForm [lhead=cluster_components, label="Uses"];
+    HomePage -> TodoItem [lhead=cluster_components, label="Uses"];
+    HomePage -> FilterBar [lhead=cluster_components, label="Uses"];
     
-    // State Management (Stores)
-    HomePage -> Stores [label="Uses/Updates"]
-    TodoForm -> Stores [label="Updates"]
-    TodoItem -> Stores [label="Updates"]
-    FilterBar -> Stores [label="Updates"]
-    StatsPage -> Stores [label="Reads Stats"]
-    
-    // Client-Server Communication
-    Stores -> ClientAPI [label="Triggers API calls\nbased on actions", MinedgeLen=2] // MinedgeLen으로 최소 간격 확보
-    ClientAPI -> TodosAPI [label="fetchTodos(), createTodo()"]
-    ClientAPI -> TodoDetailAPI [label="updateTodo(), deleteTodo()"]
-    
-    // API to Data
-    TodosAPI -> InMemoryData [label="Reads/Writes"]
-    TodoDetailAPI -> InMemoryData [label="Reads/Writes/Deletes"]
+    HomePage -> Stores [label="Uses/Updates"];
+    StatsPage -> Stores [label="Reads Stats"];
 
-    // Explicitly connect ClientAPI to SvelteKit Backend group for clarity in vertical layout
-    ClientAPI -> SvelteKit [label="HTTP Requests\nto API Routes", style=dashed, color=blue, constraint=false] // constraint=false로 레이아웃 유연성
+    // 컴포넌트 -> 스토어 (폼, 아이템 등이 직접 스토어 업데이트)
+    TodoForm -> Stores [label="Updates"];
+    TodoItem -> Stores [label="Updates"];
+    FilterBar -> Stores [label="Updates"];
     
-    // Grouping build tools at the top
-    {rank=source; Vite; SvelteKit; NodeJS}
-    // Grouping User at a higher level than client details
-    {rank=source; User}
+    // 스토어 -> 클라이언트 API
+    Stores -> ClientAPI [label="Triggers API calls", minlen=2]; // minlen으로 간격 확보
     
-    // Attempt to keep client and server somewhat aligned vertically if possible
-    // This is more of a hint to the layout engine
-    AppHTML -> TodosAPI [style=invis] // Invisible edge to influence ranking
+    // 클라이언트 API -> 서버 API
+    ClientAPI -> TodosAPI [label="fetchTodos(), createTodo()"];
+    ClientAPI -> TodoDetailAPI [label="updateTodo(), deleteTodo()"];
+    
+    // 서버 API -> 데이터 저장소
+    TodosAPI -> InMemoryData [label="Reads/Writes"];
+    TodoDetailAPI -> InMemoryData [label="Reads/Writes/Deletes"];
 
+    // ClientAPI와 SvelteKit Backend (서버)의 연결
+    // 이 연결은 개념적이므로, constraint를 false로 두어 레이아웃에 덜 영향을 주도록 함
+    ClientAPI -> SvelteKit_Framework [label="HTTP Requests\nto API Routes", style=dashed, color=blue, constraint=false];
+
+    // 컴포넌트 클러스터와 페이지 클러스터를 같은 랭크에 두도록 시도 (선택적)
+    // {rank=same; cluster_pages; cluster_components;} // 이 줄은 상황에 따라 결과가 다를 수 있음
+
+    // 레이아웃의 흐름을 위해 보이지 않는 엣지 추가 (선택적)
+    Layout -> cluster_components [style=invis, weight=10]; // 레이아웃과 컴포넌트 그룹 간의 관계 강화
 }

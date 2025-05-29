@@ -1,5 +1,22 @@
 # SGCC Web Study - Svelte & SvelteKit 샘플 프로젝트 분석하기
 
+## 실행 방법
+
+```bash
+git clone https://github.com/revenantonthemission/sgcc-web-study.git
+cd sgcc-web-study
+git checkout svelte-sveltekit-tutorial
+npm run dev
+```
+
+```bash
+    VITE v6.3.5  ready in 343 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+```
+
 ## 스크린샷
 
 ![홈페이지](home.jpg)
@@ -10,7 +27,7 @@
 
 ## 프로젝트 구조
 
-![Architecture Overview](project_architecture_overview.png)
+![Architecture Overview](project_architecture_overview.svg)
 
 ## 파일 구조
 
