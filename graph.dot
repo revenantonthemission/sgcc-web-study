@@ -1,0 +1,83 @@
+digraph ProjectArchitecture {
+	comment="SGCC Web Study SvelteKit Project Architecture"
+	rankdir=LR
+	labelloc=t
+	label="SGCC Web Study - SvelteKit Project Architecture Overview"
+	fontsize=20
+	subgraph cluster_client {
+		label="Client-Side (Browser - SvelteKit Frontend)"
+		style=filled
+		color=lightblue
+		node [style=filled color=white]
+		User [shape=actor]
+		AppHTML [label="src/app.html\n(HTML Template)"]
+		AppCSS [label="src/app.css\n(Global Styles)"]
+		subgraph cluster_components {
+			label="UI Components (src/lib/components)"
+			style=filled
+			color=lightcyan
+			Header [label="Header.svelte"]
+			TodoForm [label="TodoForm.svelte"]
+			TodoItem [label="TodoItem.svelte"]
+			FilterBar [label="FilterBar.svelte"]
+		}
+		subgraph cluster_pages {
+			label="Pages (src/routes)"
+			style=filled
+			color=lightyellow
+			HomePage [label="+page.svelte (Home)"]
+			StatsPage [label="stats/+page.svelte (Stats)"]
+			AboutPage [label="about/+page.svelte (About)"]
+			Layout [label="+layout.svelte (Common Layout)"]
+		}
+		Stores [label="src/lib/stores.js\n(Svelte Stores:\ntodos, filter, theme, stats)"]
+		ClientAPI [label="src/lib/api.js\n(Client-Side API Calls)"]
+	}
+	subgraph cluster_server {
+		label="Server-Side (SvelteKit Backend)"
+		style=filled
+		color=lightgreen
+		node [style=filled color=white]
+		subgraph cluster_api_routes {
+			label="API Routes (src/routes/api/todos)"
+			style=filled
+			color=palegreen
+			TodosAPI [label="+server.js\n(GET /api/todos, POST /api/todos)"]
+			TodoDetailAPI [label="[id]/+server.js\n(PATCH /api/todos/{id}, DELETE /api/todos/{id})"]
+		}
+		InMemoryData [label="In-Memory Data Store\n(JS Array in +server.js files)"]
+	}
+	subgraph cluster_build_tools {
+		label="Build & Development Tools"
+		style=filled
+		color=lightgrey
+		node [style=filled color=white]
+		Vite
+		SvelteKit [label="SvelteKit Framework"]
+		NodeJS [label="Node.js (Runtime Environment)"]
+	}
+	User -> AppHTML [label="Interacts via Browser"]
+	AppHTML -> Layout
+	Layout -> HomePage
+	Layout -> StatsPage
+	Layout -> AboutPage
+	AppHTML -> AppCSS [label=Links]
+	HomePage -> Header
+	HomePage -> TodoForm
+	HomePage -> TodoItem
+	HomePage -> FilterBar
+	HomePage -> Stores [label="Uses/Updates"]
+	TodoForm -> Stores [label=Updates]
+	TodoItem -> Stores [label=Updates]
+	FilterBar -> Stores [label=Updates]
+	StatsPage -> Stores [label="Reads Stats"]
+	Stores -> ClientAPI [label="Triggers API calls based on actions"]
+	ClientAPI -> TodosAPI [label="fetchTodos(), createTodo()"]
+	ClientAPI -> TodoDetailAPI [label="updateTodo(), deleteTodo()"]
+	TodosAPI -> InMemoryData [label="Reads/Writes"]
+	TodoDetailAPI -> InMemoryData [label="Reads/Writes/Deletes"]
+	SvelteKit -> Vite [label=Uses]
+	Vite -> NodeJS [label="Runs on"]
+	SvelteKit -> NodeJS [label="Runs on"]
+	ClientAPI -> SvelteKit [label="HTTP Requests to API Routes" style=dashed color=blue]
+}

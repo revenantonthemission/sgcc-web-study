@@ -1,6 +1,7 @@
 # SGCC Web Study - Svelte & SvelteKit 샘플 프로젝트 분석하기
 
 ## 스크린샷
+
 ![홈페이지](home.jpg)
 
 ![통계](stat.jpg)
@@ -8,6 +9,10 @@
 ![정보](info.jpg)
 
 ## 프로젝트 구조
+
+![Architecture Overview](project_architecture_overview.png)
+
+## 파일 구조
 
 ```txt
 src/
