@@ -1,4 +1,12 @@
-# 파일 구조
+# SGCC Web Study - Svelte & SvelteKit 샘플 프로젝트 분석하기
+
+![홈페이지](home.pdf)
+
+![통계](stat.pdf)
+
+![정보](info.pdf)
+
+## 파일 구조
 
 ```txt
 src/
