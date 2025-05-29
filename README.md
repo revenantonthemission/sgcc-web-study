@@ -27,7 +27,7 @@ npm run dev
 
 ## 프로젝트 구조
 
-![Architecture Overview](project_architecture_overview.svg)
+![Architecture Overview](project_architecture_overview.png)
 
 ## 파일 구조
 
