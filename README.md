@@ -1,12 +1,13 @@
 # SGCC Web Study - Svelte & SvelteKit 샘플 프로젝트 분석하기
 
-![홈페이지](home.pdf)
+## 스크린샷
+![홈페이지](home.jpg)
 
-![통계](stat.pdf)
+![통계](stat.jpg)
 
-![정보](info.pdf)
+![정보](info.jpg)
 
-## 파일 구조
+## 프로젝트 구조
 
 ```txt
 src/
@@ -15,7 +16,7 @@ src/
 ├── lib/
 │   ├── stores.js        # Svelte 스토어
 │   ├── api.js          # API 호출 함수
-│   └── components/      # 재사용 컴포넌트
+│   └── components/      # 재사용 핵심 컴포넌트
 │       ├── Header.svelte
 │       ├── TodoForm.svelte
 │       ├── TodoItem.svelte
