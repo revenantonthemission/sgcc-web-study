@@ -1,2 +1,5 @@
-<h1>home</h1>
-<p>this is the home page.</p>
+<script lang="ts">
+    import Memo from "../components/Memo.svelte";
+</script>
+
+<Memo />
