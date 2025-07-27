@@ -126,3 +126,45 @@ $ git checkout branch_name
 ### Pull Request
 
 앞서 `fork`를 통해 프로젝트의 복사본을 가져왔기 때문에 이 복사본에서는 자유롭게 코드를 업로드할 수 있습니다. 여러분의 작업물을 실제 프로젝트에 반영하기 위해서는 풀 리퀘스트를 해야 합니다. 풀 리퀘스트의 수용 여부는 프로젝트의 관리자가 결정합니다.
+
+# 개발 환경
+
+- **`Svelte`:** 프론트엔드
+
+- **`FastAPI`:** 백엔드
+
+- **`tailwindcss`:** 간결한 클래스로 스타일을 부여할 수 있는 라이브러리
+
+- **`marked`:**  마크다운 평문을 HTML 태그로 변환해 주는 라이브러리
+
+- **`highlight.js`:** 변환된 HTML 태그 중 `code` 태그에 스타일을 부여해 주는 라이브러리
+
+- **`marked-highlight`:** `marked`와 `highlight.js`를 연결해 주는 라이브러리
+
+- **`dompurify`:** 변환된 HTML 태그 중 악성 코드를 잡아 없애는 라이브러리
+
+# 프로젝트 구조
+
+## 폴더 구조
+
+`src/lib/components`에 스벨트 컴포넌트들을 담는다. `Memo.svelte`가 이 폴더 안에 있다.
+
+이 `Memo.svelte`를 `src/routes/+page.svelte`에서 불러와서 사용한다.
+
+## `Memo.svelte` 구조
+
+- `memoText`: 현재 작성하고 있는 마크다운 평문을 담는 변수이다.
+
+- `savedMemoText`: 저장된 마크다운 평문을 담는 변수이다. (메모를 저장하면 `memoText`에 담긴 변수가 `savedMemoText`에 대입되어 저장된다.)
+
+- `markdownRenderedMemoText`: 마크다운 평문(`memoText`)이 HTML 태그로 바뀐 변수이다.
+
+- `isModalOpen`: 메모를 클릭했을 때 모달 창(메모를 수정하는 창)이 열렸는지 아닌지를 저장하는 변수이다.
+
+- `marked.use()` 메소드로 코드 하이라이팅, 깃허브 마크다운 문법, 줄바꿈 등을 설정한다.
+
+- `{@html markdownRenderedMemoText}`을 이용해 `markdownRenderedMemoText`을 실제 HTML 태그로 렌더링한다.
+
+- `updateMarkdownRenderedMemoText()` 함수를 이용하여 마크다운 평문(`memoText`)가 바뀔 때마다 오른쪽 화면(`markdownRenderedMemoText`)을 재렌더링한다.
+
+- 닫기 버튼은 `closeModal` 함수를 호출해 모달 창을 닫고, 저장 버튼은 `saveMemo` 함수를 호출해 `memoText`에 담긴 변수를 `savedMemoText`에 대입하고 창을 닫는다.

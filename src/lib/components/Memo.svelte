@@ -5,10 +5,10 @@
     import { markedHighlight } from "marked-highlight";
     import DOMpurify from "dompurify";
 
-    let isModalOpen: boolean = false;
     let memoText: string = "";
-    let savedMemoText: string = "";
+    export let savedMemoText: string = "";
     let markdownRenderedMemoText: string = "";
+    let isModalOpen: boolean = false;
 
     marked.use(markedHighlight({
         langPrefix: "hljs language-",

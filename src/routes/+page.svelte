@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Memo from "../components/Memo.svelte";
+    import Memo from "$lib/components/Memo.svelte";
 </script>
 
-<Memo />
+<Memo savedMemoText="안녕하세요"/>
