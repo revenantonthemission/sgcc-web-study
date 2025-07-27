@@ -1,10 +1,33 @@
 <script lang="ts">
     import { marked } from "marked";
+    import hljs from "highlight.js";
+    import "highlight.js/styles/github-dark.css";
+    import { markedHighlight } from "marked-highlight";
+    import DOMpurify from "dompurify";
 
     let isModalOpen: boolean = false;
     let memoText: string = "";
     let savedMemoText: string = "";
-    $: markdownRenderedMemoText = marked(memoText);
+    let markdownRenderedMemoText: string = "";
+
+    marked.use(markedHighlight({
+        langPrefix: "hljs language-",
+        highlight(code, lang) {
+            const language = hljs.getLanguage(lang) ? lang : "plaintext";
+            return hljs.highlight(code, { language }).value;
+        }
+    }));
+    marked.use({ gfm: true, breaks: true });
+
+    async function updateMarkdownRenderedMemoText(text: string) {
+        let renderedRawMarkdownText: string = await marked.parse(text);
+        markdownRenderedMemoText = DOMpurify.sanitize(renderedRawMarkdownText);
+    }
+
+
+    $: if (memoText) {
+        updateMarkdownRenderedMemoText(memoText);
+    }
 
     function openModal() {
         memoText= savedMemoText;
@@ -23,7 +46,7 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <div
-    class="w-64 h-64 p-4 bg-white border-gray-50 border-2 cursor-pointer rounded-4xl m-4 hover:border-gray-100 hover:border-3 transition duration-150 ease-out"
+    class="w-64 h-64 p-4 bg-white border-gray-50 border-2 cursor-pointer rounded-4xl m-4 hover:border-gray-100 hover:border-3 transition duration-150 ease-out break-words"
     on:click={openModal}
     role="button"
     tabindex="0"
@@ -36,10 +59,10 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <div class="fixed inset-0 bg-black/70 z-40 flex flex-col items-center justify-center">
     <div class="w-[80vw] h-[80vh] bg-white border-gray-50 border-4 rounded-3xl z-50 p-4 grid grid-cols-2 gap-4">
-        <textarea class="resize-none focus:outline-none focus:ring-gray-200 focus:ring-2 transition duration-150 ease-out" bind:value={memoText}>
+        <textarea class="resize-none focus:outline-none focus:ring-gray-200 focus:ring-2 transition duration-150 ease-out h-full overflow-auto" bind:value={memoText}>
             {savedMemoText}
         </textarea>
-        <div class="prose">
+        <div class="prose h-full overflow-y-auto overflow-x-hidden break-words">
             {@html markdownRenderedMemoText}
         </div>
     </div>
@@ -58,3 +81,9 @@
     </div>
 </div>
 {/if}
+
+<style>
+    :global(.prose pre) {
+        background-color: transparent;
+    }
+</style>

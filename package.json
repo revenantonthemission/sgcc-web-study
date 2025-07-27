@@ -17,6 +17,7 @@
 		"@sveltejs/kit": "^2.16.0",
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
 		"@tailwindcss/typography": "^0.5.16",
+		"@types/highlight.js": "^9.12.4",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
 		"typescript": "^5.0.0",
@@ -24,7 +25,10 @@
 	},
 	"dependencies": {
 		"@tailwindcss/vite": "^4.1.11",
+		"dompurify": "^3.2.6",
+		"highlight.js": "^11.11.1",
 		"marked": "^16.0.0",
+		"marked-highlight": "^2.2.2",
 		"tailwindcss": "^4.1.11"
 	}
 }
