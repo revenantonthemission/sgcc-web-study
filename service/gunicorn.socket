@@ -1,0 +1,11 @@
+[Unit]
+Description=gunicorn socket
+
+[Socket]
+ListenStream=/run/gunicorn.sock
+SocketUser=http
+SocketGroup=http
+SocketMode=0660
+
+[Install]
+WantedBy=sockets.target

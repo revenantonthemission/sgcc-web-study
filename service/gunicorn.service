@@ -1,0 +1,16 @@
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+PIDFile=/run/gunicorn.pid
+WorkingDirectory=/home/rvnnt/sgcc-memo-demo
+ExecStart=/home/rvnnt/sgcc-memo-demo/.venv/bin/gunicorn \
+          --pid /run/gunicorn.pid \
+          --workers 4 \
+          --worker-class uvicorn.workers.UvicornWorker \
+          main:app
+
+[Install]
+WantedBy=multi-user.target
