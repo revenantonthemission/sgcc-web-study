@@ -5,9 +5,9 @@
     import { markedHighlight } from "marked-highlight";
     import DOMpurify from "dompurify";
 
-    let memoText: string = "";
-    export let savedMemoText: string = "";
-    let markdownRenderedMemoText: string = "";
+    let content: string = "";
+    export let savedContent: string = "";
+    let markdownRenderedContent: string = "";
     let isModalOpen: boolean = false;
 
     marked.use(markedHighlight({
@@ -19,18 +19,16 @@
     }));
     marked.use({ gfm: true, breaks: true });
 
-    async function updateMarkdownRenderedMemoText(text: string) {
+    async function updateMarkdownRenderedContent(text: string) {
         let renderedRawMarkdownText: string = await marked.parse(text);
-        markdownRenderedMemoText = DOMpurify.sanitize(renderedRawMarkdownText);
+        markdownRenderedContent = DOMpurify.sanitize(renderedRawMarkdownText);
     }
 
 
-    $: if (memoText) {
-        updateMarkdownRenderedMemoText(memoText);
-    }
+    $: updateMarkdownRenderedContent(content);
 
     function openModal() {
-        memoText= savedMemoText;
+        content = savedContent;
         isModalOpen = true;
     }
 
@@ -39,7 +37,7 @@
     }
 
     function saveMemo() {
-        savedMemoText = memoText;
+        savedContent = content;
         closeModal();
     }
 </script>
@@ -51,7 +49,7 @@
     role="button"
     tabindex="0"
 >
-    {savedMemoText.length <= 100 ? savedMemoText : savedMemoText.substring(0, 100) + "..."} 
+    {savedContent.length <= 100 ? savedContent : savedContent.substring(0, 100) + "..."} 
 </div>
 
 {#if isModalOpen}
@@ -59,11 +57,11 @@
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <div class="fixed inset-0 bg-black/70 z-40 flex flex-col items-center justify-center">
     <div class="w-[80vw] h-[80vh] bg-white border-gray-50 border-4 rounded-3xl z-50 p-4 grid grid-cols-2 gap-4">
-        <textarea class="resize-none focus:outline-none focus:ring-gray-200 focus:ring-2 transition duration-150 ease-out h-full overflow-auto" bind:value={memoText}>
-            {savedMemoText}
+        <textarea class="resize-none focus:outline-none focus:ring-gray-200 focus:ring-2 transition duration-150 ease-out h-full overflow-auto" bind:value={content}>
+            {savedContent}
         </textarea>
         <div class="prose h-full overflow-y-auto overflow-x-hidden break-words">
-            {@html markdownRenderedMemoText}
+            {@html markdownRenderedContent}
         </div>
     </div>
 
