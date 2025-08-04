@@ -1,5 +1,15 @@
 <script lang="ts">
-    import Memo from "$lib/components/Memo.svelte";
+    import MemoCard from "$lib/components/MemoCard.svelte";
+    import type { Memo } from "$lib/types";
+    import type { PageData } from "./$types";
+
+    export let data: PageData;
+
+    $: memos = data.memos;
 </script>
 
-<Memo savedContent="안녕하세요"/>
+<div class="grid grid-cols-7">
+    {#each memos as memo}
+        <MemoCard memo={memo} />
+    {/each}
+</div>

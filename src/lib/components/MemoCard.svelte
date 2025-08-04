@@ -4,10 +4,13 @@
     import "highlight.js/styles/github-dark.css";
     import { markedHighlight } from "marked-highlight";
     import DOMpurify from "dompurify";
+    import type { Memo } from "$lib/types";
+    import { updateMemo } from "$lib/api";
 
+    export let memo: Memo;
     let content: string = "";
-    export let savedContent: string = "";
-    let markdownRenderedContent: string = "";
+    let savedContent: string = memo.content;
+    let renderedContent: string = "";
     let isModalOpen: boolean = false;
 
     marked.use(markedHighlight({
@@ -19,13 +22,13 @@
     }));
     marked.use({ gfm: true, breaks: true });
 
-    async function updateMarkdownRenderedContent(text: string) {
-        let renderedRawMarkdownText: string = await marked.parse(text);
-        markdownRenderedContent = DOMpurify.sanitize(renderedRawMarkdownText);
+    async function updateRenderedContent(content: string) {
+        let rawContent: string = await marked.parse(content);
+        renderedContent = rawContent;
     }
 
 
-    $: updateMarkdownRenderedContent(content);
+    $: updateRenderedContent(content);
 
     function openModal() {
         content = savedContent;
@@ -38,6 +41,7 @@
 
     function saveMemo() {
         savedContent = content;
+        updateMemo(memo.id, memo.title, savedContent);
         closeModal();
     }
 </script>
@@ -61,7 +65,7 @@
             {savedContent}
         </textarea>
         <div class="prose h-full overflow-y-auto overflow-x-hidden break-words">
-            {@html markdownRenderedContent}
+            {@html renderedContent}
         </div>
     </div>
 

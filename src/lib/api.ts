@@ -1,8 +1,8 @@
 import camelcaseKeys from "camelcase-keys";
-
+import { PUBLIC_API_BASE_URL } from "$env/static/public";
 import type { Memo } from "$lib/types";
 
-const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = PUBLIC_API_BASE_URL;
 
 async function apiFetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
 	const defaultHeaders = {
