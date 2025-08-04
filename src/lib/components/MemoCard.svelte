@@ -5,7 +5,8 @@
     import { markedHighlight } from "marked-highlight";
     import DOMpurify from "dompurify";
     import type { Memo } from "$lib/types";
-    import { updateMemo } from "$lib/api";
+    import { updateMemo, deleteMemo } from "$lib/api";
+    import { invalidateAll } from "$app/navigation";
 
     export let memo: Memo;
     let content: string = "";
@@ -44,6 +45,12 @@
         updateMemo(memo.id, memo.title, savedContent);
         closeModal();
     }
+
+    async function handelDeleteButton() {
+        deleteMemo(memo.id);
+        closeModal();
+        await invalidateAll();
+    }
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -74,6 +81,11 @@
             class="bg-black/20 text-white m-2 px-8 py-4 text-lg font-bold rounded-2xl cursor-pointer hover:bg-white/10 transition duration-150 ease-out"
             on:click={closeModal}>
             닫기
+        </button>
+        <button
+            class="bg-black/20 text-white m-2 px-8 py-4 text-lg font-bold rounded-2xl cursor-pointer hover:bg-white/10 transition duration-150 ease-out"
+            on:click={handelDeleteButton}>
+            삭제
         </button>
         <button
             class="bg-black/20 text-white m-2 px-8 py-4 text-lg font-bold rounded-2xl cursor-pointer hover:bg-white/10 transition duration-150 ease-out"
