@@ -1,14 +1,116 @@
 <script lang="ts">
-    import { Plus } from "@lucide/svelte";
+    import { marked } from "marked";
+    import hljs from "highlight.js";
+    import "highlight.js/styles/github-dark.css";
+    import { markedHighlight } from "marked-highlight";
+    import { browser } from "$app/environment";
     import { createMemo } from "$lib/api";
-    import { invalidateAll } from "$app/navigation";
 
-    async function handleClick() {
-        createMemo("New memo", "New memo");
-        await invalidateAll();
+    let memoText: string = "";
+    let memoTitle: string = "";
+    let markdownRenderedMemoText: string = "";
+    let isModalOpen: boolean = false;
+
+    marked.use(markedHighlight({
+        langPrefix: "hljs language-",
+        highlight(code, lang) {
+            const language = hljs.getLanguage(lang) ? lang : "plaintext";
+            return hljs.highlight(code, { language }).value;
+        }
+    }));
+    marked.use({ gfm: true, breaks: true });
+
+    async function updateMarkdownRenderedMemoText(text: string) {
+        let renderedRawMarkdownText: string = await marked.parse(text);
+        if (browser) {
+            const { default: DOMPurify } = await import("dompurify");
+            markdownRenderedMemoText = DOMPurify.sanitize(renderedRawMarkdownText);
+        } else {
+            markdownRenderedMemoText = renderedRawMarkdownText;
+        }
+    }
+
+    $: if (memoText) {
+        updateMarkdownRenderedMemoText(memoText);
+    }
+
+    function openModal() {
+        memoText = "";
+        memoTitle = "";
+        isModalOpen = true;
+    }
+
+    function closeModal() {
+        isModalOpen = false;
+    }
+
+    async function saveMemo() {
+        if (!memoTitle.trim() || !memoText.trim()) {
+            alert('제목과 내용을 모두 입력해주세요.');
+            return;
+        }
+
+        try {
+            await createMemo({
+                title: memoTitle.trim(),
+                content: memoText.trim()
+            });
+            closeModal();
+            location.reload();
+        } catch (error) {
+            console.error('Failed to create memo:', error);
+            alert('메모 생성에 실패했습니다.');
+        }
     }
 </script>
 
-<button class="w-64 h-64 p-4 bg-white flex border-gray-50 border-2 items-center justify-center cursor-pointer rounded-4xl m-4 hover:border-gray-100 hover:border-3 transition duration-150 ease-out" on:click={handleClick}>
-    <Plus class="h-12 w-12"/>
-</button>
+<div
+    class="w-64 h-64 p-4 bg-gray-50 border-gray-200 border-2 border-dashed cursor-pointer rounded-4xl m-4 hover:border-gray-300 hover:bg-gray-100 transition duration-150 ease-out flex items-center justify-center"
+    on:click={openModal}
+    on:keydown={(e) => e.key === 'Enter' && openModal()}
+    role="button"
+    tabindex="0"
+>
+    <span class="text-6xl text-gray-400">+</span>
+</div>
+
+{#if isModalOpen}
+<div class="fixed inset-0 bg-black/70 z-40 flex flex-col items-center justify-center">
+    <div class="w-[80vw] h-[80vh] bg-white border-gray-50 border-4 rounded-3xl z-50 p-4 flex flex-col gap-4">
+        <input 
+            class="text-xl font-bold border-b-2 border-gray-200 pb-2 focus:outline-none focus:border-gray-400"
+            bind:value={memoTitle}
+            placeholder="메모 제목을 입력하세요..."
+        />
+        <div class="flex-1 grid grid-cols-2 gap-4">
+            <textarea 
+                class="resize-none focus:outline-none focus:ring-gray-200 focus:ring-2 transition duration-150 ease-out h-full overflow-auto" 
+                bind:value={memoText}
+                placeholder="메모 내용을 입력하세요..."
+            ></textarea>
+            <div class="prose h-full overflow-y-auto overflow-x-hidden break-words">
+                {@html markdownRenderedMemoText}
+            </div>
+        </div>
+    </div>
+
+    <div class="flex justify-end w-[80vw] mt-4">
+        <button
+            class="bg-black/20 text-white m-2 px-8 py-4 text-lg font-bold rounded-2xl cursor-pointer hover:bg-white/10 transition duration-150 ease-out"
+            on:click={closeModal}>
+            취소
+        </button>
+        <button
+            class="bg-blue-500/20 text-white m-2 px-8 py-4 text-lg font-bold rounded-2xl cursor-pointer hover:bg-blue-500/30 transition duration-150 ease-out"
+            on:click={saveMemo}>
+            생성
+        </button>
+    </div>
+</div>
+{/if}
+
+<style>
+    :global(.prose pre) {
+        background-color: transparent;
+    }
+</style>

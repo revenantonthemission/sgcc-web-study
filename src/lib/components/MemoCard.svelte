@@ -1,38 +1,32 @@
 <script lang="ts">
-    import { marked } from "marked";
-    import hljs from "highlight.js";
     import "highlight.js/styles/github-dark.css";
-    import { markedHighlight } from "marked-highlight";
-    import DOMpurify from "dompurify";
+    import { markdownParser } from "$lib/markdown";
+    import { debounce } from "$lib/utils";
     import type { Memo } from "$lib/types";
     import { updateMemo, deleteMemo } from "$lib/api";
-    import { invalidateAll } from "$app/navigation";
 
     export let memo: Memo;
-    let content: string = "";
-    let savedContent: string = memo.content;
-    let renderedContent: string = "";
+    
+    let memoText: string = memo.content;
+    let memoTitle: string = memo.title;
+    let markdownRenderedMemoText: string = "";
     let isModalOpen: boolean = false;
 
-    marked.use(markedHighlight({
-        langPrefix: "hljs language-",
-        highlight(code, lang) {
-            const language = hljs.getLanguage(lang) ? lang : "plaintext";
-            return hljs.highlight(code, { language }).value;
+    const debouncedUpdate = debounce(async (text: string) => {
+        if (text.trim()) {
+            markdownRenderedMemoText = await markdownParser.parse(text);
+        } else {
+            markdownRenderedMemoText = "";
         }
-    }));
-    marked.use({ gfm: true, breaks: true });
+    }, 300);
 
-    async function updateRenderedContent(content: string) {
-        let rawContent: string = await marked.parse(content);
-        renderedContent = rawContent;
+    $: if (memoText !== undefined) {
+        debouncedUpdate(memoText);
     }
 
-
-    $: updateRenderedContent(content);
-
     function openModal() {
-        content = savedContent;
+        memoText = memo.content;
+        memoTitle = memo.title;
         isModalOpen = true;
     }
 
@@ -40,55 +34,79 @@
         isModalOpen = false;
     }
 
-    function saveMemo() {
-        savedContent = content;
-        updateMemo(memo.id, memo.title, savedContent);
-        closeModal();
+    async function saveMemo() {
+        try {
+            const updatedMemo = await updateMemo(memo.id, {
+                title: memoTitle,
+                content: memoText
+            });
+            memo = updatedMemo;
+            closeModal();
+        } catch (error) {
+            console.error('Failed to update memo:', error);
+            alert('메모 저장에 실패했습니다.');
+        }
     }
 
-    async function handelDeleteButton() {
-        deleteMemo(memo.id);
-        closeModal();
-        await invalidateAll();
+    async function handleDeleteMemo() {
+        if (confirm('정말로 이 메모를 삭제하시겠습니까?')) {
+            try {
+                await deleteMemo(memo.id);
+                location.reload();
+            } catch (error) {
+                console.error('Failed to delete memo:', error);
+                alert('메모 삭제에 실패했습니다.');
+            }
+        }
     }
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
 <div
     class="w-64 h-64 p-4 bg-white border-gray-50 border-2 cursor-pointer rounded-4xl m-4 hover:border-gray-100 hover:border-3 transition duration-150 ease-out break-words"
     on:click={openModal}
+    on:keydown={(e) => e.key === 'Enter' && openModal()}
     role="button"
     tabindex="0"
 >
-    {savedContent.length <= 100 ? savedContent : savedContent.substring(0, 100) + "..."} 
+    <div class="font-bold text-lg mb-2 truncate">{memo.title}</div>
+    <div class="text-sm text-gray-600">
+        {memo.content.length <= 80 ? memo.content : memo.content.substring(0, 80) + "..."}
+    </div>
 </div>
 
 {#if isModalOpen}
-<!-- svelte-ignore a11y_no_static_element_interactions -->
-<!-- svelte-ignore a11y_click_events_have_key_events -->
 <div class="fixed inset-0 bg-black/70 z-40 flex flex-col items-center justify-center">
-    <div class="w-[80vw] h-[80vh] bg-white border-gray-50 border-4 rounded-3xl z-50 p-4 grid grid-cols-2 gap-4">
-        <textarea class="resize-none focus:outline-none focus:ring-gray-200 focus:ring-2 transition duration-150 ease-out h-full overflow-auto" bind:value={content}>
-            {savedContent}
-        </textarea>
-        <div class="prose h-full overflow-y-auto overflow-x-hidden break-words">
-            {@html renderedContent}
+    <div class="w-[80vw] h-[80vh] bg-white border-gray-50 border-4 rounded-3xl z-50 p-4 flex flex-col gap-4">
+        <input 
+            class="text-xl font-bold border-b-2 border-gray-200 pb-2 focus:outline-none focus:border-gray-400"
+            bind:value={memoTitle}
+            placeholder="메모 제목"
+        />
+        <div class="flex-1 grid grid-cols-2 gap-4 min-h-0">
+            <textarea 
+                class="resize-none focus:outline-none focus:ring-gray-200 focus:ring-2 transition duration-150 ease-out h-full min-h-0 verflow-y-auto" 
+                bind:value={memoText}
+                placeholder="메모 내용을 입력하세요..."
+            ></textarea>
+            <div class="prose h-full min-h-0 overflow-y-auto overflow-x-hidden break-words">
+                {@html markdownRenderedMemoText}
+            </div>
         </div>
     </div>
 
     <div class="flex justify-end w-[80vw] mt-4">
+        <button
+            class="bg-red-500/20 text-white m-2 px-8 py-4 text-lg font-bold rounded-2xl cursor-pointer hover:bg-red-500/30 transition duration-150 ease-out"
+            on:click={handleDeleteMemo}>
+            삭제
+        </button>
         <button
             class="bg-black/20 text-white m-2 px-8 py-4 text-lg font-bold rounded-2xl cursor-pointer hover:bg-white/10 transition duration-150 ease-out"
             on:click={closeModal}>
             닫기
         </button>
         <button
-            class="bg-black/20 text-white m-2 px-8 py-4 text-lg font-bold rounded-2xl cursor-pointer hover:bg-white/10 transition duration-150 ease-out"
-            on:click={handelDeleteButton}>
-            삭제
-        </button>
-        <button
-            class="bg-black/20 text-white m-2 px-8 py-4 text-lg font-bold rounded-2xl cursor-pointer hover:bg-white/10 transition duration-150 ease-out"
+            class="bg-blue-500/20 text-white m-2 px-8 py-4 text-lg font-bold rounded-2xl cursor-pointer hover:bg-blue-500/30 transition duration-150 ease-out"
             on:click={saveMemo}>
             저장
         </button>

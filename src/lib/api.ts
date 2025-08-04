@@ -1,64 +1,64 @@
-import camelcaseKeys from "camelcase-keys";
-import { PUBLIC_API_BASE_URL } from "$env/static/public";
-import type { Memo } from "$lib/types";
+import type { Memo } from './types';
 
-const BASE_URL = PUBLIC_API_BASE_URL;
+const API_BASE_URL = 'http://localhost:8000';
 
-async function apiFetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-	const defaultHeaders = {
-		"Content-Type": "application/json"
-	};
-
-	const response = await fetch(`${BASE_URL}${endpoint}`, {
-		...options,
-		headers: {
-			...defaultHeaders,
-			...options.headers
-		}
-	});
-
-	if (!response.ok) {
-		throw new Error(`Request failed: ${response.status} ${response.statusText}`);
-	}
-
-	if (response.status === 204) {
-		return null as T;
-	}
-
-	const data = await response.json();
-
-	return camelcaseKeys(data, { deep: true }) as T;
+export async function getMemos(): Promise<Memo[]> {
+    const response = await fetch(`${API_BASE_URL}/memos/`);
+    if (!response.ok) {
+        throw new Error(`Failed to fetch memos: ${response.statusText}`);
+    }
+    return response.json();
 }
 
-export function createMemo(title: string, content: string): Promise<Memo> {
-	return apiFetch<Memo>("/memos/", {
-		method: "POST",
-		body: JSON.stringify({ title, content })
-	});
+export async function getMemo(id: number): Promise<Memo> {
+    const response = await fetch(`${API_BASE_URL}/memos/${id}`);
+    if (!response.ok) {
+        throw new Error(`Failed to fetch memo: ${response.statusText}`);
+    }
+    return response.json();
 }
 
-export function getMemos(): Promise<Memo[]> {
-	return apiFetch<Memo[]>("/memos/");
+export async function createMemo(memo: { title: string; content: string }): Promise<Memo> {
+    const response = await fetch(`${API_BASE_URL}/memos/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(memo),
+    });
+    if (!response.ok) {
+        throw new Error(`Failed to create memo: ${response.statusText}`);
+    }
+    return response.json();
 }
 
-export function getMemoById(id: number): Promise<Memo> {
-	return apiFetch<Memo>(`/memos/${id}`);
+export async function updateMemo(id: number, memo: { title?: string; content?: string }): Promise<Memo> {
+    const response = await fetch(`${API_BASE_URL}/memos/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(memo),
+    });
+    if (!response.ok) {
+        throw new Error(`Failed to update memo: ${response.statusText}`);
+    }
+    return response.json();
 }
 
-export function updateMemo(id: number, title: string, content: string): Promise<Memo> {
-	return apiFetch<Memo>(`/memos/${id}`, {
-		method: "PUT",
-		body: JSON.stringify({ title, content })
-	});
+export async function deleteMemo(id: number): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/memos/${id}`, {
+        method: 'DELETE',
+    });
+    if (!response.ok) {
+        throw new Error(`Failed to delete memo: ${response.statusText}`);
+    }
 }
 
-export function deleteMemo(id: number): Promise<void> {
-	return apiFetch<void>(`/memos/${id}`, {
-		method: "DELETE"
-	});
-}
-
-export function searchMemos(query: string): Promise<Memo[]> {
-	const encodedQuery = encodeURIComponent(query);
-	return apiFetch<Memo[]>(`/memos/search/?q=${encodedQuery}`);
+export async function searchMemos(query: string): Promise<Memo[]> {
+    const response = await fetch(`${API_BASE_URL}/memos/search/?q=${encodeURIComponent(query)}`);
+    if (!response.ok) {
+        throw new Error(`Failed to search memos: ${response.statusText}`);
+    }
+    return response.json();
 }

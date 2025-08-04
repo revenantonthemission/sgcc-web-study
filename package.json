@@ -4,16 +4,17 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "node --max-old-space-size=4096 ./node_modules/.bin/vite dev",
+		"dev:low-mem": "node --max-old-space-size=2048 ./node_modules/.bin/vite dev",
 		"build": "vite build",
-		"preview": "vite preview",
+		"preview": "vite preview --host",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^4.0.0",
-		"@sveltejs/adapter-vercel": "^5.6.3",
+		"@sveltejs/adapter-vercel": "^5.8.1",
 		"@sveltejs/kit": "^2.16.0",
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
 		"@tailwindcss/typography": "^0.5.16",
@@ -31,6 +32,7 @@
 		"highlight.js": "^11.11.1",
 		"marked": "^16.0.0",
 		"marked-highlight": "^2.2.2",
-		"tailwindcss": "^4.1.11"
+		"tailwindcss": "^4.1.11",
+		"terser": "^5.43.1"
 	}
 }
