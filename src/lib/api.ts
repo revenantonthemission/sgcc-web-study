@@ -1,6 +1,6 @@
 import type { Memo } from './types';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'http://163.239.88.120';
 
 export async function getMemos(): Promise<Memo[]> {
     const response = await fetch(`${API_BASE_URL}/memos/`);

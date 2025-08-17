@@ -1,42 +1,28 @@
 <script lang="ts">
-    import { marked } from "marked";
-    import hljs from "highlight.js";
-    import "highlight.js/styles/github-dark.css";
-    import { markedHighlight } from "marked-highlight";
-    import { browser } from "$app/environment";
-    import { createMemo } from "$lib/api";
+    import 'highlight.js/styles/github-dark.css';
+    import { markdownParser } from '$lib/markdown';
+    import { debounce } from '$lib/utils';
+    import type { Memo } from '$lib/types';
+    import { createMemo } from '$lib/api';
 
-    let memoText: string = "";
-    let memoTitle: string = "";
-    let markdownRenderedMemoText: string = "";
-    let isModalOpen: boolean = false;
+    let memoTitle = '';
+    let memoText = '';
+    let markdownRenderedMemoText = '';
+    let isModalOpen = false;
 
-    marked.use(markedHighlight({
-        langPrefix: "hljs language-",
-        highlight(code, lang) {
-            const language = hljs.getLanguage(lang) ? lang : "plaintext";
-            return hljs.highlight(code, { language }).value;
-        }
-    }));
-    marked.use({ gfm: true, breaks: true });
-
-    async function updateMarkdownRenderedMemoText(text: string) {
-        let renderedRawMarkdownText: string = await marked.parse(text);
-        if (browser) {
-            const { default: DOMPurify } = await import("dompurify");
-            markdownRenderedMemoText = DOMPurify.sanitize(renderedRawMarkdownText);
+    const debouncedUpdate = debounce(async (text: string) => {
+        if (text.trim()) {
+            markdownRenderedMemoText = await markdownParser.parse(text);
         } else {
-            markdownRenderedMemoText = renderedRawMarkdownText;
+            markdownRenderedMemoText = "";
         }
-    }
+    }, 300);
 
-    $: if (memoText) {
-        updateMarkdownRenderedMemoText(memoText);
+    $: if (memoText !== undefined) {
+        debouncedUpdate(memoText);
     }
 
     function openModal() {
-        memoText = "";
-        memoTitle = "";
         isModalOpen = true;
     }
 
@@ -59,36 +45,36 @@
             location.reload();
         } catch (error) {
             console.error('Failed to create memo:', error);
-            alert('메모 생성에 실패했습니다.');
+            alert(`메모 생성에 실패했습니다. ${error}`);
         }
     }
 </script>
 
 <div
-    class="w-64 h-64 p-4 bg-gray-50 border-gray-200 border-2 border-dashed cursor-pointer rounded-4xl m-4 hover:border-gray-300 hover:bg-gray-100 transition duration-150 ease-out flex items-center justify-center"
+    class="break-inside-avoid w-60 h-60 p-4 bg-[#FFF3DF] border-[#200F4C] border-2 border-dashed cursor-pointer rounded-lg m-4 text-6xl hover:text-7xl transition duration-150 ease-out flex items-center justify-center"
     on:click={openModal}
     on:keydown={(e) => e.key === 'Enter' && openModal()}
     role="button"
     tabindex="0"
 >
-    <span class="text-6xl text-gray-400">+</span>
+    <span class="text-[#200F4C] transition duration-150 ease-out">+</span>
 </div>
 
 {#if isModalOpen}
 <div class="fixed inset-0 bg-black/70 z-40 flex flex-col items-center justify-center">
-    <div class="w-[80vw] h-[80vh] bg-white border-gray-50 border-4 rounded-3xl z-50 p-4 flex flex-col gap-4">
+    <div class="w-[80vw] h-[80vh] bg-[#200F4C] rounded-lg z-50 p-4 flex flex-col gap-4">
         <input 
-            class="text-xl font-bold border-b-2 border-gray-200 pb-2 focus:outline-none focus:border-gray-400"
+            class="text-4xl text-[#FFF3DF] font-black font-[Pretendard_Variable] border-b-1 border-[#FFF3DF] pb-2 focus:outline-none"
             bind:value={memoTitle}
             placeholder="메모 제목을 입력하세요..."
         />
         <div class="flex-1 grid grid-cols-2 gap-4">
             <textarea 
-                class="resize-none focus:outline-none focus:ring-gray-200 focus:ring-2 transition duration-150 ease-out h-full overflow-auto" 
+                class="font-[Ubuntu_Mono] text-[#FFF3DF] resize-none focus:outline-none  transition duration-150 ease-out h-full overflow-auto" 
                 bind:value={memoText}
                 placeholder="메모 내용을 입력하세요..."
             ></textarea>
-            <div class="prose h-full overflow-y-auto overflow-x-hidden break-words">
+            <div class="font-[Ubuntu_Mono] text-[#FFF3DF] prose h-full overflow-y-auto overflow-x-hidden break-words">
                 {@html markdownRenderedMemoText}
             </div>
         </div>
@@ -96,12 +82,12 @@
 
     <div class="flex justify-end w-[80vw] mt-4">
         <button
-            class="bg-black/20 text-white m-2 px-8 py-4 text-lg font-bold rounded-2xl cursor-pointer hover:bg-white/10 transition duration-150 ease-out"
+            class="bg-[#FFF3DF] text-[#200F4C] m-2 px-8 py-4 text-lg font-bold rounded-2xl cursor-pointer transition duration-150 ease-out"
             on:click={closeModal}>
             취소
         </button>
         <button
-            class="bg-blue-500/20 text-white m-2 px-8 py-4 text-lg font-bold rounded-2xl cursor-pointer hover:bg-blue-500/30 transition duration-150 ease-out"
+            class="bg-[#200F4C] text-[#FFF3DF] m-2 px-8 py-4 text-lg font-bold rounded-2xl cursor-pointer transition duration-150 ease-out"
             on:click={saveMemo}>
             생성
         </button>
