@@ -10,7 +10,7 @@
 </script>
 
 <div class="grid grid-cols-7">
-    {#each memos as memo}
+    {#each memos as memo (memo.id)}
         <MemoCard memo={memo} />
     {/each}
     <MemoPlus />
