@@ -13,7 +13,12 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # --- 데이터베이스 설정 ---
-DATABASE_URL = "mysql+aiomysql://root:phoenix@localhost:3306/memo_app"
+import os
+
+DATABASE_URL = os.getenv(
+    "DATABASE_URL", 
+    "mysql+aiomysql://memo_user:phoenix@localhost:3306/memo_app"
+)
 
 metadata = sqlalchemy.MetaData()
 memos = sqlalchemy.Table(
@@ -30,7 +35,15 @@ memos = sqlalchemy.Table(
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Lifespan: 애플리케이션 시작...")
-    engine = create_async_engine(DATABASE_URL, echo=True)
+    engine = create_async_engine(
+        DATABASE_URL, 
+        echo=True,
+        pool_size=10,
+        max_overflow=20,
+        pool_timeout=30,
+        pool_recycle=3600,
+        pool_pre_ping=True
+    )
     async_session_factory = async_sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
     app.state.db_engine = engine
     app.state.db_session_factory = async_session_factory
@@ -88,6 +101,9 @@ async def get_db(request: Request) -> AsyncGenerator[AsyncSession, None]:
     async with session_factory() as session:
         try:
             yield session
+        except Exception:
+            await session.rollback()
+            raise
         finally:
             await session.close()
 

@@ -1,0 +1,22 @@
+[Unit]
+Description=SGCC Memo App (SvelteKit)
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=rvnnt
+Group=rvnnt
+WorkingDirectory=/home/rvnnt/sgcc-web-study
+Environment=NODE_ENV=production
+Environment=HOST=0.0.0.0
+Environment=PORT=3000
+ExecStart=/usr/bin/node /home/rvnnt/sgcc-web-study/build/index.js
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=sgcc-memo-app
+
+[Install]
+WantedBy=multi-user.target
