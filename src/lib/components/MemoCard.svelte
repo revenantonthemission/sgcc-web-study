@@ -87,11 +87,11 @@
         />
         <div class="flex-1 grid grid-cols-2 gap-4 min-h-0">
             <textarea 
-                class="resize-none focus:outline-none h-full min-h-0 verflow-y-auto text-[#FFF3DF] font-[Ubuntu_Mono]"
+                class="resize-none focus:outline-none h-full min-h-0 overflow-y-auto text-[#FFF3DF] font-[Ubuntu_Mono]"
                 bind:value={memoText}
                 placeholder="메모 내용을 입력하세요..."
             ></textarea>
-            <div class="prose h-full min-h-0 overflow-y-auto overflow-x-hidden break-words text-[#FFF3DF]">
+            <div class="markdown-content h-full min-h-0 overflow-y-auto overflow-x-hidden break-words text-[#FFF3DF]">
                 {@html markdownRenderedMemoText}
             </div>
         </div>

@@ -68,13 +68,13 @@
             bind:value={memoTitle}
             placeholder="메모 제목을 입력하세요..."
         />
-        <div class="flex-1 grid grid-cols-2 gap-4">
+        <div class="flex-1 grid grid-cols-2 gap-4 min-h-0">
             <textarea 
-                class="font-[Ubuntu_Mono] text-[#FFF3DF] resize-none focus:outline-none  transition duration-150 ease-out h-full overflow-auto" 
+                class="resize-none focus:outline-none h-full min-h-0 overflow-y-auto text-[#FFF3DF] font-[Ubuntu_Mono]" 
                 bind:value={memoText}
                 placeholder="메모 내용을 입력하세요..."
             ></textarea>
-            <div class="font-[Ubuntu_Mono] text-[#FFF3DF] prose h-full overflow-y-auto overflow-x-hidden break-words">
+            <div class="markdown-content h-full min-h-0 overflow-y-auto overflow-x-hidden break-words text-[#FFF3DF]">
                 {@html markdownRenderedMemoText}
             </div>
         </div>
