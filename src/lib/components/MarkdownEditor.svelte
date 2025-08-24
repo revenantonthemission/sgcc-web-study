@@ -3,11 +3,11 @@
     import { markdownParser } from "$lib/markdown";
     import { debounce } from "$lib/utils";
 
-    export let value: string = "";
-    export let placeholder: string = "내용을 입력하세요...";
+    export let value = "";
+    export let placeholder = "내용을 입력하세요...";
     
-    let markdownRenderedText: string = "";
-    let isModalOpen: boolean = false;
+    let markdownRenderedText = "";
+    let isModalOpen = false;
 
     const debouncedUpdate = debounce(async (text: string) => {
         if (text.trim()) {

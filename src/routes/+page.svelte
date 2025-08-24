@@ -1,11 +1,11 @@
 <script lang="ts">
-    import MemoCard from "$lib/components/MemoCard.svelte";
-    import MemoPlus from "$lib/components/MemoPlus.svelte";
-    import type { PageData } from "./$types";
+    import MemoCard from '$lib/components/MemoCard.svelte';
+    import MemoPlus from '$lib/components/MemoPlus.svelte';
+    import type { Memo } from '$lib/types.ts';
+    import type { PageData } from './$types';
 
-    export let data: PageData;
-
-    $: memos = data.memos;
+    let { data } = $props();
+    let memos: Memo[] = data.memos;
 </script>
 
 <div class="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 2xl:columns-6 bg-[#FFF3DF]">
