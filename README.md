@@ -164,15 +164,8 @@ sudo tail -f /var/log/nginx/sgcc-memo-demo.error.log
 
 ## Architecture
 
-- **Nginx** (Port 80) → Reverse proxy
-  - `/memos/` → FastAPI backend (Port 8000)
-  - All other routes → SvelteKit app (Port 3000)
-- **SvelteKit App** (Port 3000) → Node.js server with SSR
-- **FastAPI Backend** (Port 8000) → Memo API and database
-
-## Files Modified
-
-- `service/nginx.conf` → Fixed nginx configuration
-- `service/sgcc-memo-app.service` → Systemd service
-- `src/lib/api.ts` → API base URL for SSR/client
-- `svelte.config.js` → Changed to adapter-node
+- **Nginx** (Port 80) → 리버스 프록시
+  - `/memos/` → FastAPI 백엔드 (8000번 포트)
+  - 그 외 → SvelteKit 프론트엔드 (3000번 포트)
+- **SvelteKit App** (3000번 포트) → Node.js 서버 (SSR 적용)
+- **FastAPI Backend** (8000번 포트) → API 및 데이터베이스
