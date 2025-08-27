@@ -86,6 +86,26 @@
 
 - 닫기 버튼은 `closeModal` 함수를 호출해 모달 창을 닫고, 저장 버튼은 `saveMemo` 함수를 호출해 `memoText`에 담긴 변수를 `savedMemoText`에 대입하고 창을 닫는다.
 
+### API
+
+| 기능 유형         | Method & Endpoint                                         | 설명                        |
+|-----------------------|-----------------------------------------------------------|------------------------------------|
+| **Create**            | `POST /memos/`                                            | 새 메모 생성                    |
+| **List**              | `GET /memos/`                                             | 모든 메모 가져오기         |
+| **Get**               | `GET /memos/123`                                          | ID로 특정 메모 가져오기                  |
+| **Update**            | `PUT /memos/123`                                          | 메모 업데이트              |
+| **Delete**            | `DELETE /memos/123`                                       | 메모 삭제                        |
+| **Search (text)**     | `GET /memos/search/?q=keyword`                            | 텍스트로 검색                        |
+| **Search (keywords)** | `GET /memos/list-by-keywords/?keywords=work+todo`         | 키워드로 검색               |
+| **Filter (tags)**     | `GET /memos/list-by-tags/?tags=urgent,work`               | 태그로 필터링                      |
+| **Filter (priority)** | `GET /memos/list-by-priority/?priority=3`                 | 우선순위로 필터링               |
+| **Filter (category)** | `GET /memos/list-by-category/?category=work`              | 카테고리로 필터링                    |
+| **Favorites**         | `GET /memos/list-favorites/`                              | 즐겨찾기에 등록된 메모만 가져오기                     |
+| **Archived**          | `GET /memos/list-archived/`                               | 저장된 메모만 가져오기                      |
+| **Recent**            | `GET /memos/list-recent/?days=30&order_by=updated`        | 최근 편집된 메모부터 가져오기                    |
+| **Date Range**        | `GET /memos/list-by-date/?start_date=2024-01-01`          | 생성일자로 특정 메모 가져오기               |
+
+
 --- 
 
 ## Manual Deployment Steps
