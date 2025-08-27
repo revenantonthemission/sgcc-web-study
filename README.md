@@ -1,5 +1,7 @@
 # sgcc-web-study
 
+2025년 1학기 SGCC 웹 스터디의 프로젝트로, 동아리 서버 위에서 작동하는 메모 앱을 만들었습니다.
+
 ## 프로젝트 구조
 
 - `/src/lib/`: 라이브러리
@@ -139,7 +141,7 @@ sudo systemctl status sgcc-memo-app
 sudo cp /etc/nginx/sites-available/memo-demo.com /etc/nginx/sites-available/memo-demo.com.backup
 
 # Copy new config
-sudo cp service/memo-demo.com.fixed /etc/nginx/sites-available/memo-demo.com
+sudo cp service/memo-demo.com /etc/nginx/sites-available/memo-demo.com
 
 # Test and reload nginx
 sudo nginx -t
@@ -225,7 +227,7 @@ sudo tail -f /var/log/nginx/sgcc-memo-demo.error.log
 
 ## Architecture
 
-- **Nginx** (Port 80) → 리버스 프록시
+- **Nginx** (80번 포트) → 리버스 프록시
   - `/memos/` → FastAPI 백엔드 (8000번 포트)
   - 그 외 → SvelteKit 프론트엔드 (3000번 포트)
 - **SvelteKit App** (3000번 포트) → Node.js 서버 (SSR 적용)
