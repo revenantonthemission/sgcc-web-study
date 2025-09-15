@@ -1,13 +1,13 @@
 [Unit]
 Description=gunicorn daemon
-Requires=gunicorn.socket
 After=network.target
 
 [Service]
 PIDFile=/run/gunicorn.pid
-WorkingDirectory=/home/rvnnt/sgcc-memo-demo
-ExecStart=/home/rvnnt/sgcc-memo-demo/.venv/bin/gunicorn \
+WorkingDirectory=/home/rvnnt/sgcc-back
+ExecStart=/home/rvnnt/sgcc-back/.venv/bin/gunicorn \
           --pid /run/gunicorn.pid \
+	  --bind 127.0.0.1:8000 \
           --workers 4 \
           --worker-class uvicorn.workers.UvicornWorker \
           main:app
